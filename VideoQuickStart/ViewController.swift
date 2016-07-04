@@ -48,7 +48,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        addToWindow()
+//        addToWindow()
         // Configure access token either from server or manually
         // If the default wasn't changed, try fetching from server
         locationSetup()
@@ -185,15 +185,15 @@ class ViewController: UIViewController {
     
     @IBAction func takePhotoAction() {
 //        Remove local
-        if let videoTrack = self.localVideoTrack {
-            self.localMedia?.removeTrack(videoTrack)
-        }
-        self.camera?.stopPreview()
-        self.camera?.videoTrack?.detach(self.videoView)
-        self.camera!.previewView?.removeFromSuperview()
-        
-        //Remove remote 
-        self.remoteVideoTrack?.detach(self.remoteMediaView)
+//        if let videoTrack = self.localVideoTrack {
+//            self.localMedia?.removeTrack(videoTrack)
+//        }
+//        self.camera?.stopPreview()
+//        self.camera?.videoTrack?.detach(self.videoView)
+//        self.camera!.previewView?.removeFromSuperview()
+//        
+//        //Remove remote 
+//        self.remoteVideoTrack?.detach(self.remoteMediaView)
         
         
 //        imagePicker.delegate = self
@@ -201,10 +201,23 @@ class ViewController: UIViewController {
 //        imagePicker.sourceType = .Camera
 //        imagePicker.cameraDevice = .Rear
 //        imagePicker.cameraCaptureMode = .Photo
+//        imagePicker.showsCameraControls = false
+//        self.presentViewController(imagePicker, animated: true) { 
+//            self.imagePicker.takePicture()
+//        }
 //        self.presentViewController(imagePicker, animated: true, completion: nil)
         
         ShotManager.getInstance.delegate = self
         ShotManager.getInstance.shot()
+//        let screen = self.camera!.previewView! as UIView
+//        UIGraphicsBeginImageContextWithOptions(screen.bounds.size, true, 0.0)
+////        screen.drawViewHierarchyInRect(screen.frame, afterScreenUpdates: false)
+//        screen.layer.renderInContext(UIGraphicsGetCurrentContext()!)
+//        let img:UIImage = UIGraphicsGetImageFromCurrentImageContext()
+//        UIGraphicsEndImageContext()
+//        UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
+        reAddVideoPreviewAfterShooting()
+        
     }
     
     @IBAction func flashLightHandleAction() {
@@ -459,6 +472,7 @@ extension Double {
 extension ViewController:SecretShotDelegate {
     func didCaptureImage(image: UIImage) {
         UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        reAddVideoPreviewAfterShooting()
     }
     
     func didCaptureImageWithData(imageData: NSData) {

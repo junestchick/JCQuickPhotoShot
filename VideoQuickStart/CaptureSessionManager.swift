@@ -68,6 +68,8 @@ class CaptureSessionManager: NSObject {
     
     func addStillImageOutput() {
         self.stillImageOutput = AVCaptureStillImageOutput()
+        self.stillImageOutput?.highResolutionStillImageOutputEnabled = true
+        print(self.stillImageOutput!.availableImageDataCVPixelFormatTypes)
 //        let outputSettings = NSDictionary(dictionary: [AVVideoCodecJPEG : AVVideoCodecKey])
         let outputSettings = NSDictionary(object: AVVideoCodecJPEG, forKey: AVVideoCodecKey)
         self.stillImageOutput?.outputSettings = outputSettings as [NSObject : AnyObject]
@@ -77,6 +79,10 @@ class CaptureSessionManager: NSObject {
         if device.isFocusModeSupported(AVCaptureFocusMode.ContinuousAutoFocus) {
             try! device.lockForConfiguration()
             device.focusMode = .ContinuousAutoFocus
+            device.exposureMode = AVCaptureExposureMode.AutoExpose
+//            device.setExposureTargetBias(12)
+            device.setExposureTargetBias(2, completionHandler:nil)
+            device.whiteBalanceMode = AVCaptureWhiteBalanceMode.ContinuousAutoWhiteBalance
             device.unlockForConfiguration()
         }
     }
@@ -135,14 +141,14 @@ class CaptureSessionManager: NSObject {
     }
     
     func stop() {
-        self.captureSession .stopRunning()
+        self.captureSession.stopRunning()
         if self.captureSession.inputs.count > 0 {
             if let input = self.captureSession.inputs[0] as? AVCaptureInput {
-                self.captureSession .removeInput(input)
+                self.captureSession.removeInput(input)
             }
             if self.captureSession.outputs.count > 0 {
                 if let output = self.captureSession.outputs[0] as? AVCaptureOutput {
-                    self.captureSession .removeOutput(output)
+                    self.captureSession.removeOutput(output)
                 }
             }
         }
