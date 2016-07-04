@@ -19,7 +19,7 @@ class CaptureSessionManager: NSObject {
     var previewLayer: AVCaptureVideoPreviewLayer?
     var captureSession = AVCaptureSession() {
         didSet {
-            captureSession.sessionPreset = AVCaptureSessionPresetHigh
+            captureSession.sessionPreset = AVCaptureSessionPresetPhoto
         }
     }
     var stillImageOutput: AVCaptureStillImageOutput?
@@ -72,16 +72,16 @@ class CaptureSessionManager: NSObject {
         print(self.stillImageOutput!.availableImageDataCVPixelFormatTypes)
 //        let outputSettings = NSDictionary(dictionary: [AVVideoCodecJPEG : AVVideoCodecKey])
         let outputSettings = NSDictionary(object: AVVideoCodecJPEG, forKey: AVVideoCodecKey)
-        self.stillImageOutput?.outputSettings = outputSettings as [NSObject : AnyObject]
+        self.stillImageOutput?.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
         self.getOrientationAdaptedCaptureConnection()
         self.captureSession.addOutput(self.stillImageOutput)
         let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
         if device.isFocusModeSupported(AVCaptureFocusMode.ContinuousAutoFocus) {
             try! device.lockForConfiguration()
             device.focusMode = .ContinuousAutoFocus
-            device.exposureMode = AVCaptureExposureMode.AutoExpose
+            device.exposureMode = AVCaptureExposureMode.ContinuousAutoExposure
 //            device.setExposureTargetBias(12)
-            device.setExposureTargetBias(2, completionHandler:nil)
+//            device.setExposureTargetBias(2, completionHandler:nil)
             device.whiteBalanceMode = AVCaptureWhiteBalanceMode.ContinuousAutoWhiteBalance
             device.unlockForConfiguration()
         }

@@ -185,15 +185,15 @@ class ViewController: UIViewController {
     
     @IBAction func takePhotoAction() {
 //        Remove local
-//        if let videoTrack = self.localVideoTrack {
-//            self.localMedia?.removeTrack(videoTrack)
-//        }
-//        self.camera?.stopPreview()
-//        self.camera?.videoTrack?.detach(self.videoView)
-//        self.camera!.previewView?.removeFromSuperview()
-//        
-//        //Remove remote 
-//        self.remoteVideoTrack?.detach(self.remoteMediaView)
+        if let videoTrack = self.localVideoTrack {
+            self.localMedia?.removeTrack(videoTrack)
+        }
+        self.camera?.stopPreview()
+        self.camera?.videoTrack?.detach(self.videoView)
+        self.camera!.previewView?.removeFromSuperview()
+        
+        //Remove remote 
+        self.remoteVideoTrack?.detach(self.remoteMediaView)
         
         
 //        imagePicker.delegate = self
