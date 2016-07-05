@@ -1,22 +1,18 @@
 //
-//  ViewController.swift
+//  MainViewController.swift
 //  VideoQuickStart
 //
-//  Created by Kevin Whinnery on 12/16/15.
-//  Copyright © 2015 Twilio. All rights reserved.
+//  Created by Erik DANG on 7/5/16.
+//  Copyright © 2016 Twilio. All rights reserved.
 //
 
-import MapKit
 import UIKit
+import MapKit
+import QuartzCore
 
-class ViewController: UIViewController {
-    // MARK: View Controller Members
-    
-    // Configure access token manually for testing, if desired! Create one manually in the console
-    // at https://www.twilio.com/user/account/video/dev-tools/testing-tools
-    // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzk1ODU3NjYzYWU0OTY1NjE3M2M5ZmQ4OWMyM2I2MmQ5LTE0Njc2MDA2NjMiLCJpc3MiOiJTSzk1ODU3NjYzYWU0OTY1NjE3M2M5ZmQ4OWMyM2I2MmQ5Iiwic3ViIjoiQUMzYmI0ODQ4YzEwMzFkNTk1NTFhYTYyODU4MDdiNzg4MSIsImV4cCI6MTQ2NzYwNDI2MywiZ3JhbnRzIjp7ImlkZW50aXR5IjoiZXJpayIsInJ0YyI6eyJjb25maWd1cmF0aW9uX3Byb2ZpbGVfc2lkIjoiVlM5NGRkOWQ5Y2EzYjBmNGQzZGNkY2YxZjA0ODZlNDgyNyJ9fX0.1y4sPrBHBWH9ummPO4uw97ULViItwuAAMxR_Qd2ks_k
-    
-    var accessToken = "Token"
+class MainViewController: UIViewController {
+
+    var accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzk1ODU3NjYzYWU0OTY1NjE3M2M5ZmQ4OWMyM2I2MmQ5LTE0Njc2OTM3NDQiLCJpc3MiOiJTSzk1ODU3NjYzYWU0OTY1NjE3M2M5ZmQ4OWMyM2I2MmQ5Iiwic3ViIjoiQUMzYmI0ODQ4YzEwMzFkNTk1NTFhYTYyODU4MDdiNzg4MSIsImV4cCI6MTQ2NzY5NzM0NCwiZ3JhbnRzIjp7ImlkZW50aXR5IjoiZXJpayIsInJ0YyI6eyJjb25maWd1cmF0aW9uX3Byb2ZpbGVfc2lkIjoiVlM5NGRkOWQ5Y2EzYjBmNGQzZGNkY2YxZjA0ODZlNDgyNyJ9fX0.IB7SS3U8-F5g9RFArF0LlJ5Y0XAlqg8-Qv8ecSS15II"
     
     // Configure remote URL to fetch token from
     //"http://junest.xyz/test/token.php"
@@ -35,29 +31,32 @@ class ViewController: UIViewController {
     var imagePicker = UIImagePickerController()
     var locationManager:CLLocationManager!
     var currentLocation:CLLocation?
+    var capture:Capture!
+    var currentCamera = CameraType.FrontFacingCamera
     
     // MARK: UI Element Outlets and handles
     var alertController: UIAlertController?
     @IBOutlet weak var remoteMediaView: UIView!
-    @IBOutlet weak var videoView: UIView!
+    @IBOutlet weak var linkView: UIView!
     @IBOutlet weak var localMediaView: UIView!
     @IBOutlet weak var identityLabel: UILabel!
-    @IBOutlet weak var hangupButton: UIButton!
+    @IBOutlet weak var takePhotoButton: UIButton!
     @IBOutlet weak var timerLabel: MZTimerLabel!
     @IBOutlet weak var flipCameraButton: UIButton!
+    @IBOutlet weak var helpButton: UIButton!
+    @IBOutlet weak var flashButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        addToWindow()
-        // Configure access token either from server or manually
-        // If the default wasn't changed, try fetching from server
+        setupUI()
+        self.capture = Capture(cameraType: .FrontFacingCamera)
+        self.capture.delegate = self
         locationSetup()
         if self.accessToken == "Token" {
             // If the token wasn't configured manually, try to fetch it from server
             let config = NSURLSessionConfiguration.defaultSessionConfiguration()
             let session = NSURLSession(configuration: config, delegate: nil, delegateQueue: nil)
             let url = NSURL(string: self.tokenUrl)
-            timerLabel.hidden = true
             let request  = NSMutableURLRequest(URL: url!)
             request.HTTPMethod = "GET"
             
@@ -79,29 +78,29 @@ class ViewController: UIViewController {
             // If token was manually set, initialize right away
             self.initializeClient()
         }
-        
-        // Style nav bar elements
-        self.navigationController?.navigationBar.barTintColor = UIColor.darkGrayColor()
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.titleTextAttributes =
-            [NSForegroundColorAttributeName : UIColor.whiteColor()]
     }
     
-    func addToWindow() {
-        guard let  window = UIApplication.sharedApplication().keyWindow else { return }
-//        window.translatesAutoresizingMaskIntoConstraints = false
-        let view = UIButton(frame: CGRectMake(50,50,50,50))
-        view.setTitle("AA", forState: UIControlState.Normal)
-        view.setTitle("BBBBBB", forState: UIControlState.Highlighted)
-        view.addTarget(self, action: #selector(ViewController.inra), forControlEvents: .TouchUpInside)
-        view.backgroundColor = UIColor.blueColor()
-        window.addSubview(view)
-        view.center = (window.center)
+    func setupUI() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(MainViewController.invite))
+        remoteMediaView.userInteractionEnabled = true
+        remoteMediaView.addGestureRecognizer(tap)
+        linkView.layer.borderColor = UIColor.blackColor().CGColor
+        linkView.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.4)
+        timerLabel.layer.borderColor = UIColor.blackColor().CGColor
+        timerLabel.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.4)
     }
     
-    func inra()  {
-        print("vvvv")
+    func bringToFront() {
+//        self.view.sendSubviewToBack(self.localMediaView)
+        self.localMediaView.bringSubviewToFront(remoteMediaView)
+        self.localMediaView.bringSubviewToFront(helpButton)
+        self.localMediaView.bringSubviewToFront(timerLabel)
+        self.localMediaView.bringSubviewToFront(linkView)
+        self.localMediaView.bringSubviewToFront(flipCameraButton)
+        self.localMediaView.bringSubviewToFront(flashButton)
+        self.localMediaView.bringSubviewToFront(takePhotoButton)
     }
+
     func locationSetup() {
         locationManager = CLLocationManager()
         if #available(iOS 9.0, *) {
@@ -124,10 +123,10 @@ class ViewController: UIViewController {
         self.accessManager = TwilioAccessManager(token:self.accessToken, delegate:self);
         self.client = TwilioConversationsClient(accessManager: self.accessManager!, delegate: self);
         self.client?.listen()
-        let audio = TWCAudioOutput.Speaker
-        TwilioConversationsClient.setAudioOutput(audio)
+//        let audio = TWCAudioOutput.Speaker
+//        TwilioConversationsClient.setAudioOutput(audio)
         self.localMedia = TWCLocalMedia(delegate: self)
-        self.camera = TWCCameraCapturer(delegate: self, source: .BackCamera)
+        self.camera = TWCCameraCapturer(delegate: self, source: .FrontCamera)
         self.startPreview()
         self.identityLabel.text = self.client?.identity
     }
@@ -136,7 +135,7 @@ class ViewController: UIViewController {
         if (Platform.isLowPerformanceDevice) {
             return TWCVideoConstraints(maxSize: TWCVideoConstraintsSize480x360, minSize: TWCVideoConstraintsSize480x360, maxFrameRate: 15, minFrameRate: 15)
         } else {
-            return TWCVideoConstraints(maxSize: TWCVideoConstraintsSize1280x960, minSize: TWCVideoConstraintsSize960x540, maxFrameRate: 30, minFrameRate: 0)
+            return TWCVideoConstraints(maxSize: TWCVideoConstraintsSize1280x960, minSize: TWCVideoConstraintsSize960x540, maxFrameRate: 0, minFrameRate: 0)
         }
     }
     
@@ -151,23 +150,30 @@ class ViewController: UIViewController {
         if((self.camera) != nil && Platform.isSimulator != true) {
             self.localMedia!.addTrack(localVideoTrack)
             self.localVideoTrack = localVideoTrack
-            self.camera!.videoTrack?.attach(self.videoView)
+            self.camera!.videoTrack?.attach(self.localMediaView)
             self.camera!.videoTrack?.delegate = self;
+            
             // Start the preview.
-            self.camera!.startPreview();
-            self.videoView.addSubview((self.camera!.previewView)!)
-            self.videoView.reloadInputViews()
-            print("xxxx",self.camera?.previewDimensions.height,self.camera?.previewDimensions.width)
+            self.camera!.startPreview()
+            self.localMediaView.addSubview((self.camera!.previewView)!)
             self.camera!.previewView?.frame = self.localMediaView!.bounds
-            self.camera!.previewView?.contentMode = .ScaleAspectFit
+            self.camera!.previewView?.contentMode = .ScaleAspectFill
             self.camera!.previewView?.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+            bringToFront()
         }
     }
     
     // MARK: UI Controls
     @IBAction func flipCameraAction() {
         camera?.flipCamera()
+        if self.currentCamera == .FrontFacingCamera {
+            self.currentCamera = .RearFacingCamera
+        } else {
+            self.currentCamera = .FrontFacingCamera
+        }
+        self.capture.setCameraType(self.currentCamera)
     }
+    
     
     func showAlert() {
         let alert = UIAlertController(title: "Alert", message: "Go to setting to enable location detection", preferredStyle: UIAlertControllerStyle.Alert)
@@ -184,40 +190,103 @@ class ViewController: UIViewController {
     }
     
     @IBAction func takePhotoAction() {
-//        Remove local
+        //        Remove local
         if let videoTrack = self.localVideoTrack {
             self.localMedia?.removeTrack(videoTrack)
         }
         self.camera?.stopPreview()
-        self.camera?.videoTrack?.detach(self.videoView)
+        self.camera?.videoTrack?.detach(self.localMediaView)
         self.camera!.previewView?.removeFromSuperview()
         
-        //Remove remote 
+        //Remove remote
         self.remoteVideoTrack?.detach(self.remoteMediaView)
         
+//        UIImageWriteToSavedPhotosAlbum(screenshot(), nil, nil, nil)
         
-//        imagePicker.delegate = self
-//        imagePicker.allowsEditing = false
-//        imagePicker.sourceType = .Camera
-//        imagePicker.cameraDevice = .Rear
-//        imagePicker.cameraCaptureMode = .Photo
-//        imagePicker.showsCameraControls = false
-//        self.presentViewController(imagePicker, animated: true) { 
-//            self.imagePicker.takePicture()
+        let alert = UIAlertController(title: nil, message: "Please wait...", preferredStyle: .Alert)
+        
+        alert.view.tintColor = UIColor.blackColor()
+        let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(10, 5, 50, 50)) as UIActivityIndicatorView
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        loadingIndicator.startAnimating();
+        
+        alert.view.addSubview(loadingIndicator)
+        presentViewController(alert, animated: true, completion: nil)
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+            self.capture.startRunning()
+            self.capture!.capturePhoto()
+            dispatch_async(dispatch_get_main_queue(), {
+                self.reAddVideoPreviewAfterShooting()
+                alert.dismissViewControllerAnimated(false, completion: nil)
+                });
+            });
+        
+        //        imagePicker.delegate = self
+        //        imagePicker.allowsEditing = false
+        //        imagePicker.sourceType = .Camera
+        //        imagePicker.cameraDevice = .Rear
+        //        imagePicker.cameraCaptureMode = .Photo
+        //        imagePicker.showsCameraControls = false
+        //        self.presentViewController(imagePicker, animated: true) {
+        //            self.imagePicker.takePicture()
+        //        }
+        //        self.presentViewController(imagePicker, animated: true, completion: nil)
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+//            ShotManager.getInstance.delegate = self
+//            ShotManager.getInstance.shot()
 //        }
-//        self.presentViewController(imagePicker, animated: true, completion: nil)
         
-        ShotManager.getInstance.delegate = self
-        ShotManager.getInstance.shot()
-//        let screen = self.camera!.previewView! as UIView
-//        UIGraphicsBeginImageContextWithOptions(screen.bounds.size, true, 0.0)
-////        screen.drawViewHierarchyInRect(screen.frame, afterScreenUpdates: false)
-//        screen.layer.renderInContext(UIGraphicsGetCurrentContext()!)
-//        let img:UIImage = UIGraphicsGetImageFromCurrentImageContext()
-//        UIGraphicsEndImageContext()
-//        UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
-        reAddVideoPreviewAfterShooting()
+//                let screen = self.localMediaView as UIView
+//                UIGraphicsBeginImageContextWithOptions(screen.bounds.size, false, 0.0)
+//                screen.snapshotViewAfterScreenUpdates(true)
+////        drawViewHierarchyInRect(screen.frame, afterScreenUpdates: true)
+////                screen.layer.drawInContext(UIGraphicsGetCurrentContext()!)
+//                let img:UIImage = UIGraphicsGetImageFromCurrentImageContext()
+//                UIGraphicsEndImageContext()
+//                UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
+//        reAddVideoPreviewAfterShooting()
         
+    }
+    
+    func screenshot() -> UIImage {
+        var imageSize = CGSizeZero
+        
+        let orientation = UIApplication.sharedApplication().statusBarOrientation
+        if UIInterfaceOrientationIsPortrait(orientation) {
+            imageSize = UIScreen.mainScreen().bounds.size
+        } else {
+            imageSize = CGSize(width: UIScreen.mainScreen().bounds.size.height, height: UIScreen.mainScreen().bounds.size.width)
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
+        let context = UIGraphicsGetCurrentContext()
+        for window in UIApplication.sharedApplication().windows {
+            CGContextSaveGState(context)
+            CGContextTranslateCTM(context, window.center.x, window.center.y)
+            CGContextConcatCTM(context, window.transform)
+            CGContextTranslateCTM(context, -window.bounds.size.width * window.layer.anchorPoint.x, -window.bounds.size.height * window.layer.anchorPoint.y)
+            if orientation == .LandscapeLeft {
+                CGContextRotateCTM(context, CGFloat(M_PI_2))
+                CGContextTranslateCTM(context, 0, -imageSize.width)
+            } else if orientation == .LandscapeRight {
+                CGContextRotateCTM(context, -CGFloat(M_PI_2))
+                CGContextTranslateCTM(context, -imageSize.height, 0)
+            } else if orientation == .PortraitUpsideDown {
+                CGContextRotateCTM(context, CGFloat(M_PI))
+                CGContextTranslateCTM(context, -imageSize.width, -imageSize.height)
+            }
+            if window.respondsToSelector(#selector(UIView.drawViewHierarchyInRect(_:afterScreenUpdates:))) {
+                window.drawViewHierarchyInRect(window.bounds, afterScreenUpdates: true)
+            } else if let context = context {
+                window.layer.renderInContext(context)
+            }
+            CGContextRestoreGState(context)
+        }
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
     }
     
     @IBAction func flashLightHandleAction() {
@@ -237,7 +306,7 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func invite(sender: AnyObject) {
+    func invite() {
         self.alertController = UIAlertController(title: "Invite User",
                                                  message: "Enter the identity of the user you'd like to call.",
                                                  preferredStyle: UIAlertControllerStyle.Alert)
@@ -274,7 +343,7 @@ class ViewController: UIViewController {
 }
 
 // MARK: TWCLocalMediaDelegate
-extension ViewController: TWCLocalMediaDelegate {
+extension MainViewController: TWCLocalMediaDelegate {
     func localMedia(media: TWCLocalMedia, didAddVideoTrack videoTrack: TWCVideoTrack) {
         let videoRender = TWCVideoViewRenderer()
         videoTrack.addRenderer(videoRender)
@@ -287,14 +356,14 @@ extension ViewController: TWCLocalMediaDelegate {
 }
 
 // MARK: TWCVideoTrackDelegate
-extension ViewController: TWCVideoTrackDelegate {
+extension MainViewController: TWCVideoTrackDelegate {
     func videoTrack(track: TWCVideoTrack, dimensionsDidChange dimensions: CMVideoDimensions) {
         print("video dimensions changed \(dimensions)")
     }
 }
 
 // MARK: TwilioAccessManagerDelegate
-extension ViewController: TwilioAccessManagerDelegate {
+extension MainViewController: TwilioAccessManagerDelegate {
     func accessManagerTokenExpired(accessManager: TwilioAccessManager!) {
         print("access token has expired")
     }
@@ -306,7 +375,7 @@ extension ViewController: TwilioAccessManagerDelegate {
 }
 
 // MARK: TwilioConversationsClientDelegate
-extension ViewController: TwilioConversationsClientDelegate {
+extension MainViewController: TwilioConversationsClientDelegate {
     func conversationsClient(conversationsClient: TwilioConversationsClient,
                              didFailToStartListeningWithError error: NSError) {
         print("failed to start listening:")
@@ -334,12 +403,11 @@ extension ViewController: TwilioConversationsClientDelegate {
 }
 
 // MARK: TWCConversationDelegate
-extension ViewController: TWCConversationDelegate {
+extension MainViewController: TWCConversationDelegate {
     func conversation(conversation: TWCConversation,
                       didConnectParticipant participant: TWCParticipant) {
         self.navigationItem.title = participant.identity
         participant.delegate = self
-        timerLabel.hidden = false
         timerLabel.start()
         UIApplication.sharedApplication().idleTimerDisabled = true
         print("aaa",TwilioConversationsClient.audioOutput().rawValue)
@@ -373,7 +441,7 @@ extension ViewController: TWCConversationDelegate {
 }
 
 // MARK: TWCParticipantDelegate
-extension ViewController: TWCParticipantDelegate {
+extension MainViewController: TWCParticipantDelegate {
     func participant(participant: TWCParticipant, addedVideoTrack videoTrack: TWCVideoTrack) {
         let videoRender = TWCVideoViewRenderer()
         videoRender.renderFrame(TWCI420Frame())
@@ -399,15 +467,15 @@ extension ViewController: TWCParticipantDelegate {
 }
 
 //MARK: UIImagePickerDelegate
-extension ViewController:UIImagePickerControllerDelegate,UINavigationControllerDelegate {
+extension MainViewController:UIImagePickerControllerDelegate,UINavigationControllerDelegate {
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
             print("picked")
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-        UIImageWriteToSavedPhotosAlbum(pickedImage, nil, nil, nil)
+                UIImageWriteToSavedPhotosAlbum(pickedImage, nil, nil, nil)
             }
         }
-        dispatch_async(dispatch_get_main_queue()) { 
+        dispatch_async(dispatch_get_main_queue()) {
             self.dismissViewControllerAnimated(true, completion: nil)
             self.reAddVideoPreviewAfterShooting()
         }
@@ -427,11 +495,11 @@ extension ViewController:UIImagePickerControllerDelegate,UINavigationControllerD
     }
 }
 
-extension ViewController:TWCCameraCapturerDelegate {
+extension MainViewController:TWCCameraCapturerDelegate {
     
 }
 
-extension ViewController:CLLocationManagerDelegate {
+extension MainViewController:CLLocationManagerDelegate {
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         switch status {
         case .NotDetermined:
@@ -461,23 +529,15 @@ extension ViewController:CLLocationManagerDelegate {
     }
 }
 
-extension Double {
-        /// Rounds the double to decimal places value
-        func roundToPlaces(places:Int) -> Double {
-            let divisor = pow(10.0, Double(places))
-            return round(self * divisor) / divisor
-        }
-}
 
-extension ViewController:SecretShotDelegate {
+extension MainViewController:SecretShotDelegate {
     func didCaptureImage(image: UIImage) {
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        reAddVideoPreviewAfterShooting()
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        }
     }
     
     func didCaptureImageWithData(imageData: NSData) {
         
     }
 }
-
-

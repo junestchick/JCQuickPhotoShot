@@ -10,9 +10,17 @@ import Foundation
 import ImageIO
 import AVFoundation
 
-enum CameraType {
-    case FrontFacingCamera
+enum CameraType: Int {
+    case FrontFacingCamera = 0
     case RearFacingCamera
+    
+    static func fromHashValue(hashValue: Int) -> CameraType {
+        if hashValue == 0 {
+            return .FrontFacingCamera
+        } else {
+            return .RearFacingCamera
+        }
+    }
 }
 
 protocol SecretShotDelegate {
@@ -33,6 +41,7 @@ class ShotManager: NSObject {
     }
     func shot() {
         self.captureManager?.captureStillImage()
+        self.captureManager?.stop()
     }
     
     private func setupCaptureManager(camera:CameraType) {
@@ -45,7 +54,7 @@ class ShotManager: NSObject {
         captureManager?.delegate = self
         captureManager?.initiateCaptureSessionForCamera(camera)
         captureManager?.addStillImageOutput()
-        captureManager?.addVideoPreviewLayer()
+//        captureManager?.addVideoPreviewLayer()
         captureManager?.captureSession.commitConfiguration()
         
     }

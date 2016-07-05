@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MainViewController" customModule="VideoQuickStart" customModuleProvider="target">
+            <connections>
+                <outlet property="flashButton" destination="C2b-YX-Z76" id="MtZ-Ji-heu"/>
+                <outlet property="flipCameraButton" destination="Boe-HH-H9z" id="HvJ-GC-iRf"/>
+                <outlet property="helpButton" destination="Vsc-fM-kMD" id="74u-aa-qer"/>
+                <outlet property="identityLabel" destination="IKA-Sw-sak" id="ObT-PS-fqI"/>
+                <outlet property="linkView" destination="zZG-jk-z38" id="HtL-Wh-UMe"/>
+                <outlet property="localMediaView" destination="kI7-Ec-52N" id="cHi-eN-krZ"/>
+                <outlet property="remoteMediaView" destination="rEm-CW-EX8" id="DH1-Ay-zAI"/>
+                <outlet property="takePhotoButton" destination="EIj-XV-emK" id="Php-4E-bXy"/>
+                <outlet property="timerLabel" destination="qYO-Sc-jfB" id="VmS-yx-I4M"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kI7-Ec-52N" userLabel="LocalView">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zZG-jk-z38" userLabel="LinkView">
+                            <rect key="frame" x="8" y="8" width="100" height="50"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Video link number" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="kZ1-00-T7H">
+                                    <rect key="frame" x="0.0" y="0.0" width="100" height="21"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12345678" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="IKA-Sw-sak">
+                                    <rect key="frame" x="0.0" y="29" width="100" height="21"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstItem="kZ1-00-T7H" firstAttribute="width" secondItem="zZG-jk-z38" secondAttribute="width" id="Dil-Ud-I0t"/>
+                                <constraint firstAttribute="bottom" secondItem="IKA-Sw-sak" secondAttribute="bottom" id="IGf-X4-rgc"/>
+                                <constraint firstItem="kZ1-00-T7H" firstAttribute="top" secondItem="zZG-jk-z38" secondAttribute="top" id="K76-h5-cis"/>
+                                <constraint firstItem="kZ1-00-T7H" firstAttribute="leading" secondItem="zZG-jk-z38" secondAttribute="leading" id="Ko5-56-vdR"/>
+                                <constraint firstItem="IKA-Sw-sak" firstAttribute="leading" secondItem="zZG-jk-z38" secondAttribute="leading" id="aRI-mR-j1q"/>
+                                <constraint firstAttribute="height" constant="50" id="ijj-9k-VZr"/>
+                                <constraint firstAttribute="width" constant="100" id="j3K-3m-auJ"/>
+                                <constraint firstItem="IKA-Sw-sak" firstAttribute="width" secondItem="zZG-jk-z38" secondAttribute="width" id="tfE-W9-WYL"/>
+                            </constraints>
+                        </view>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="qYO-Sc-jfB" userLabel="TimerLabel" customClass="MZTimerLabel">
+                            <rect key="frame" x="128" y="8" width="65" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="65" id="oP2-nv-1JW"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vsc-fM-kMD" userLabel="Help">
+                            <rect key="frame" x="280" y="8" width="32" height="30"/>
+                            <state key="normal" title="Help"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C2b-YX-Z76" userLabel="FlashButton">
+                            <rect key="frame" x="8" y="442" width="37" height="30"/>
+                            <state key="normal" title="Flash"/>
+                            <connections>
+                                <action selector="flashLightHandleAction" destination="-1" eventType="touchUpInside" id="JME-xA-c47"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Boe-HH-H9z" userLabel="Flipbutton">
+                            <rect key="frame" x="145" y="442" width="30" height="30"/>
+                            <state key="normal" title="Flip"/>
+                            <connections>
+                                <action selector="flipCameraAction" destination="-1" eventType="touchUpInside" id="Gl9-ap-RRT"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EIj-XV-emK" userLabel="ShotButton">
+                            <rect key="frame" x="280" y="442" width="32" height="30"/>
+                            <state key="normal" title="Shot"/>
+                            <connections>
+                                <action selector="takePhotoAction" destination="-1" eventType="touchUpInside" id="CQu-Vg-dhh"/>
+                            </connections>
+                        </button>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rEm-CW-EX8">
+                            <rect key="frame" x="8" y="195" width="68" height="90"/>
+                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="rEm-CW-EX8" secondAttribute="height" multiplier="3:4" id="kQP-ho-MR2"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="Vsc-fM-kMD" firstAttribute="top" secondItem="kI7-Ec-52N" secondAttribute="top" constant="8" id="2gc-5D-pzq"/>
+                        <constraint firstItem="zZG-jk-z38" firstAttribute="top" secondItem="kI7-Ec-52N" secondAttribute="top" constant="8" id="3Iv-Hc-FJh"/>
+                        <constraint firstItem="Boe-HH-H9z" firstAttribute="centerX" secondItem="kI7-Ec-52N" secondAttribute="centerX" id="98c-LU-e5n"/>
+                        <constraint firstItem="rEm-CW-EX8" firstAttribute="leading" secondItem="zZG-jk-z38" secondAttribute="leading" id="GXj-TW-Lw0"/>
+                        <constraint firstAttribute="bottom" secondItem="Boe-HH-H9z" secondAttribute="bottom" constant="8" id="Noi-i8-gXD"/>
+                        <constraint firstAttribute="trailing" secondItem="EIj-XV-emK" secondAttribute="trailing" constant="8" id="OFr-P5-qXR"/>
+                        <constraint firstItem="zZG-jk-z38" firstAttribute="leading" secondItem="kI7-Ec-52N" secondAttribute="leading" constant="8" id="SPj-AK-Lzn"/>
+                        <constraint firstAttribute="bottom" secondItem="C2b-YX-Z76" secondAttribute="bottom" constant="8" id="Slb-Dr-GkH"/>
+                        <constraint firstAttribute="bottom" secondItem="EIj-XV-emK" secondAttribute="bottom" constant="8" id="W0W-da-vBE"/>
+                        <constraint firstItem="qYO-Sc-jfB" firstAttribute="top" secondItem="kI7-Ec-52N" secondAttribute="top" constant="8" id="lE2-mG-ina" customClass="MZTime"/>
+                        <constraint firstItem="qYO-Sc-jfB" firstAttribute="centerX" secondItem="kI7-Ec-52N" secondAttribute="centerX" id="sG4-RR-B0W"/>
+                        <constraint firstAttribute="trailing" secondItem="Vsc-fM-kMD" secondAttribute="trailing" constant="8" id="tkW-hb-YEN"/>
+                        <constraint firstItem="C2b-YX-Z76" firstAttribute="leading" secondItem="kI7-Ec-52N" secondAttribute="leading" constant="8" id="vmw-Yw-zmT"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="rEm-CW-EX8" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" multiplier="1:4.7" id="1sq-fb-LG1"/>
+                <constraint firstItem="kI7-Ec-52N" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="LPJ-tl-jea"/>
+                <constraint firstItem="rEm-CW-EX8" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="N8w-zB-Wuw"/>
+                <constraint firstItem="kI7-Ec-52N" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="YOb-yQ-QlC"/>
+                <constraint firstItem="kI7-Ec-52N" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="Zr7-kv-FXE"/>
+                <constraint firstItem="kI7-Ec-52N" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="pmb-vv-uLZ"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="312.5" y="268.5"/>
+        </view>
+    </objects>
+</document>
