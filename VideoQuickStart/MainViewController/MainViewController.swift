@@ -11,8 +11,8 @@ import MapKit
 import QuartzCore
 
 class MainViewController: UIViewController {
-
-    var accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InR3aWxpby1mcGE7dj0xIn0.eyJqdGkiOiJTSzk1ODU3NjYzYWU0OTY1NjE3M2M5ZmQ4OWMyM2I2MmQ5LTE0Njc2OTM3NDQiLCJpc3MiOiJTSzk1ODU3NjYzYWU0OTY1NjE3M2M5ZmQ4OWMyM2I2MmQ5Iiwic3ViIjoiQUMzYmI0ODQ4YzEwMzFkNTk1NTFhYTYyODU4MDdiNzg4MSIsImV4cCI6MTQ2NzY5NzM0NCwiZ3JhbnRzIjp7ImlkZW50aXR5IjoiZXJpayIsInJ0YyI6eyJjb25maWd1cmF0aW9uX3Byb2ZpbGVfc2lkIjoiVlM5NGRkOWQ5Y2EzYjBmNGQzZGNkY2YxZjA0ODZlNDgyNyJ9fX0.IB7SS3U8-F5g9RFArF0LlJ5Y0XAlqg8-Qv8ecSS15II"
+    
+    var accessToken = "Token"
     
     // Configure remote URL to fetch token from
     //"http://junest.xyz/test/token.php"
@@ -91,7 +91,7 @@ class MainViewController: UIViewController {
     }
     
     func bringToFront() {
-//        self.view.sendSubviewToBack(self.localMediaView)
+        //        self.view.sendSubviewToBack(self.localMediaView)
         self.localMediaView.bringSubviewToFront(remoteMediaView)
         self.localMediaView.bringSubviewToFront(helpButton)
         self.localMediaView.bringSubviewToFront(timerLabel)
@@ -100,7 +100,7 @@ class MainViewController: UIViewController {
         self.localMediaView.bringSubviewToFront(flashButton)
         self.localMediaView.bringSubviewToFront(takePhotoButton)
     }
-
+    
     func locationSetup() {
         locationManager = CLLocationManager()
         if #available(iOS 9.0, *) {
@@ -123,8 +123,8 @@ class MainViewController: UIViewController {
         self.accessManager = TwilioAccessManager(token:self.accessToken, delegate:self);
         self.client = TwilioConversationsClient(accessManager: self.accessManager!, delegate: self);
         self.client?.listen()
-//        let audio = TWCAudioOutput.Speaker
-//        TwilioConversationsClient.setAudioOutput(audio)
+        //        let audio = TWCAudioOutput.Speaker
+        //        TwilioConversationsClient.setAudioOutput(audio)
         self.localMedia = TWCLocalMedia(delegate: self)
         self.camera = TWCCameraCapturer(delegate: self, source: .FrontCamera)
         self.startPreview()
@@ -140,6 +140,7 @@ class MainViewController: UIViewController {
     }
     
     func reAddVideoPreviewAfterShooting() {
+        self.camera = TWCCameraCapturer(delegate: self, source: self.currentCamera == .FrontFacingCamera ? .FrontCamera : .BackCamera)
         startPreview()
         self.remoteVideoTrack?.attach(self.remoteMediaView)
     }
@@ -197,30 +198,25 @@ class MainViewController: UIViewController {
         self.camera?.stopPreview()
         self.camera?.videoTrack?.detach(self.localMediaView)
         self.camera!.previewView?.removeFromSuperview()
-        
+        self.camera = nil
         //Remove remote
         self.remoteVideoTrack?.detach(self.remoteMediaView)
+        self.capture.startRunning()
+                let alert = UIAlertController(title: nil, message: "Please wait...", preferredStyle: .Alert)
         
-//        UIImageWriteToSavedPhotosAlbum(screenshot(), nil, nil, nil)
-        
-        let alert = UIAlertController(title: nil, message: "Please wait...", preferredStyle: .Alert)
-        
-        alert.view.tintColor = UIColor.blackColor()
-        let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(10, 5, 50, 50)) as UIActivityIndicatorView
-        loadingIndicator.hidesWhenStopped = true
-        loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
-        loadingIndicator.startAnimating();
-        
-        alert.view.addSubview(loadingIndicator)
-        presentViewController(alert, animated: true, completion: nil)
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
-            self.capture.startRunning()
-            self.capture!.capturePhoto()
-            dispatch_async(dispatch_get_main_queue(), {
-                self.reAddVideoPreviewAfterShooting()
-                alert.dismissViewControllerAnimated(false, completion: nil)
-                });
-            });
+                alert.view.tintColor = UIColor.blackColor()
+                let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(10, 5, 50, 50)) as UIActivityIndicatorView
+                loadingIndicator.hidesWhenStopped = true
+                loadingIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+                loadingIndicator.startAnimating();
+                alert.view.addSubview(loadingIndicator)
+                presentViewController(alert, animated: true, completion: nil)
+                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+                    self.capture!.capturePhoto()
+                    dispatch_async(dispatch_get_main_queue(), {
+                        alert.dismissViewControllerAnimated(false, completion: nil)
+                        });
+                    });
         
         //        imagePicker.delegate = self
         //        imagePicker.allowsEditing = false
@@ -232,62 +228,34 @@ class MainViewController: UIViewController {
         //            self.imagePicker.takePicture()
         //        }
         //        self.presentViewController(imagePicker, animated: true, completion: nil)
-//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-//            ShotManager.getInstance.delegate = self
-//            ShotManager.getInstance.shot()
-//        }
         
-//                let screen = self.localMediaView as UIView
-//                UIGraphicsBeginImageContextWithOptions(screen.bounds.size, false, 0.0)
-//                screen.snapshotViewAfterScreenUpdates(true)
-////        drawViewHierarchyInRect(screen.frame, afterScreenUpdates: true)
-////                screen.layer.drawInContext(UIGraphicsGetCurrentContext()!)
-//                let img:UIImage = UIGraphicsGetImageFromCurrentImageContext()
-//                UIGraphicsEndImageContext()
+        //TAKE SCreenShot
+//        let screen = self.localMediaView
+//        let imga = screen.snapshotViewAfterScreenUpdates(true)
+//        imga.frame = remoteMediaView.frame
+//        
+//        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0), {
+//            self.view.addSubview(imga)
+//            self.view.bringSubviewToFront(imga)
+//        dispatch_async(dispatch_get_main_queue(),
+//            {
+//                let img = self.getUIImageFromThisUIView(self.view)
 //                UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
-//        reAddVideoPreviewAfterShooting()
+//            })
+//        })
         
     }
     
-    func screenshot() -> UIImage {
-        var imageSize = CGSizeZero
-        
-        let orientation = UIApplication.sharedApplication().statusBarOrientation
-        if UIInterfaceOrientationIsPortrait(orientation) {
-            imageSize = UIScreen.mainScreen().bounds.size
-        } else {
-            imageSize = CGSize(width: UIScreen.mainScreen().bounds.size.height, height: UIScreen.mainScreen().bounds.size.width)
-        }
-        
-        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
-        let context = UIGraphicsGetCurrentContext()
-        for window in UIApplication.sharedApplication().windows {
-            CGContextSaveGState(context)
-            CGContextTranslateCTM(context, window.center.x, window.center.y)
-            CGContextConcatCTM(context, window.transform)
-            CGContextTranslateCTM(context, -window.bounds.size.width * window.layer.anchorPoint.x, -window.bounds.size.height * window.layer.anchorPoint.y)
-            if orientation == .LandscapeLeft {
-                CGContextRotateCTM(context, CGFloat(M_PI_2))
-                CGContextTranslateCTM(context, 0, -imageSize.width)
-            } else if orientation == .LandscapeRight {
-                CGContextRotateCTM(context, -CGFloat(M_PI_2))
-                CGContextTranslateCTM(context, -imageSize.height, 0)
-            } else if orientation == .PortraitUpsideDown {
-                CGContextRotateCTM(context, CGFloat(M_PI))
-                CGContextTranslateCTM(context, -imageSize.width, -imageSize.height)
-            }
-            if window.respondsToSelector(#selector(UIView.drawViewHierarchyInRect(_:afterScreenUpdates:))) {
-                window.drawViewHierarchyInRect(window.bounds, afterScreenUpdates: true)
-            } else if let context = context {
-                window.layer.renderInContext(context)
-            }
-            CGContextRestoreGState(context)
-        }
-        
-        let image = UIGraphicsGetImageFromCurrentImageContext()
+    func getUIImageFromThisUIView(view:UIView) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, false, 0)
+//        view.layer.renderInContext(UIGraphicsGetCurrentContext()!)
+        view.drawViewHierarchyInRect(view.frame, afterScreenUpdates: true)
+        let img:UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return image
+        return img
+        
     }
+    
     
     @IBAction func flashLightHandleAction() {
         let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
@@ -532,6 +500,7 @@ extension MainViewController:CLLocationManagerDelegate {
 
 extension MainViewController:SecretShotDelegate {
     func didCaptureImage(image: UIImage) {
+        self.reAddVideoPreviewAfterShooting()
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
         }

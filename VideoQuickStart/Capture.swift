@@ -68,13 +68,27 @@ class Capture: NSObject {
         do { try activeCamera.lockForConfiguration() } catch { return }
         if activeCamera.isFocusModeSupported(.ContinuousAutoFocus) {
             activeCamera.focusMode = .ContinuousAutoFocus
+        } else if activeCamera.isFocusModeSupported(.AutoFocus) {
+            activeCamera.focusMode = .AutoFocus
+        } else if activeCamera.isFocusModeSupported(.Locked){
+            activeCamera.focusMode = .Locked
         }
         if activeCamera.isExposureModeSupported(.ContinuousAutoExposure) {
             activeCamera.exposureMode = .ContinuousAutoExposure
+        } else if activeCamera.isExposureModeSupported(.AutoExpose) {
+            activeCamera.exposureMode = .AutoExpose
+        } else if activeCamera.isExposureModeSupported(.Locked) {
+            activeCamera.exposureMode = .Locked
         }
         if activeCamera.isWhiteBalanceModeSupported(.ContinuousAutoWhiteBalance) {
             activeCamera.whiteBalanceMode = .ContinuousAutoWhiteBalance
+        } else if activeCamera.isWhiteBalanceModeSupported(.AutoWhiteBalance) {
+            activeCamera.whiteBalanceMode = .AutoWhiteBalance
+        } else if activeCamera.isWhiteBalanceModeSupported(.Locked){
+            activeCamera.whiteBalanceMode = .Locked
         }
+        
+//        activeCamera.setExposureTargetBias(2, completionHandler: <#T##((CMTime) -> Void)!##((CMTime) -> Void)!##(CMTime) -> Void#>)
         activeCamera.unlockForConfiguration()
         guard session.canAddInput(input) else { return }
         session.addInput(input)
@@ -104,17 +118,18 @@ class Capture: NSObject {
     func capturePhoto(){
         guard let connection = output.connectionWithMediaType(AVMediaTypeVideo) else { return }
         assignVideoOrienationForVideoConnection(connection)
-        var a = 1
         while input.device.adjustingWhiteBalance || input.device.adjustingExposure || input.device.adjustingFocus {
-            print("\(a++)")
         }
-        output.captureStillImageAsynchronouslyFromConnection(connection) { (sampleBuffer, error) in
-            guard sampleBuffer != nil && error == nil else { return}
-            let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
-            guard let img = UIImage(data: imageData) else { return }
-            self.session.stopRunning()
-            self.delegate?.didCaptureImage(img)
-            
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(0.5 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) { () -> Void in
+            if connection.active {
+                self.output.captureStillImageAsynchronouslyFromConnection(connection) { (sampleBuffer, error) in
+                    guard sampleBuffer != nil && error == nil else { return}
+                    let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                    guard let img = UIImage(data: imageData) else { return }
+                    self.session.stopRunning()
+                    self.delegate?.didCaptureImage(img)
+                }
+        }
         }
     }
 }
